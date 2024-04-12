@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SP24 Red Project</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script src="js/launch_screen.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>SP24 Red Project</h1>
+        <h2>Security BlockChain</h2>
+        <div id="Cube"></div>
+        <a href="home.html" class="start-button">Continue</a>
+    </div>
+    <script>
+        // Set up the scene, camera, and renderer as global variables.
+        var scene, camera, renderer, cube;
+    
+        init();
+        animate();
+    
+        function init() {
+            // Create the scene and set the scene size.
+            scene = new THREE.Scene();
+            var WIDTH = document.getElementById('Cube').clientWidth,
+                HEIGHT = document.getElementById('Cube').clientHeight;
+    
+            // Create a renderer and add it to the DOM.
+            renderer = new THREE.WebGLRenderer({antialias:true});
+            renderer.setSize(WIDTH, HEIGHT);
+            document.getElementById('Cube').appendChild(renderer.domElement);
+    
+            // Create a camera, zoom it out from the model a bit, and add it to the scene.
+            camera = new THREE.PerspectiveCamera(75, WIDTH / HEIGHT, 0.1, 2000);
+            camera.position.set(0,0,100);
+            scene.add(camera);
+    
+            // Create a cube and add it to the scene.
+            var geometry = new THREE.BoxGeometry(50, 50, 50);
+            var material = new THREE.MeshBasicMaterial({color: 0xff0000});
+            cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+    
+            // Create an event listener that resizes the renderer with the browser window.
+            window.addEventListener('resize', function() {
+                var WIDTH = document.getElementById('Cube').clientWidth,
+                    HEIGHT = document.getElementById('Cube').clientHeight;
+                renderer.setSize(WIDTH, HEIGHT);
+                camera.aspect = WIDTH / HEIGHT;
+                camera.updateProjectionMatrix();
+            });
+        }
+    
+        function animate() {
+            requestAnimationFrame(animate);
+    
+            // Rotate the cube.
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+    
+            // Render the scene.
+            renderer.render(scene, camera);
+        }
+    </script>
+    
+    </body>
+    </html>
+</body>
+</html>

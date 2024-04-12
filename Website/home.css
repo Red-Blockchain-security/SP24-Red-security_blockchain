@@ -1,0 +1,112 @@
+body {
+    background-color: #FFFFFF;
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+
+nav { font-weight: bold;
+    padding: 5px;
+    float:left;
+    width: 100%;
+}
+
+nav a { text-decoration: none; }
+nav a:link { color: #b8b8e0; }
+nav a:visited {color: #6b6b94}
+nav a:hover { color: #FFFFFF; }
+
+.container {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.logo {
+    width: 300px;
+    height: 250px;
+    margin: 0 auto;
+    padding: 5px;
+    display: block;
+}
+
+h1, h2 {
+    color: #000000;
+    margin-top: 20px;
+}
+
+p {
+    color: #000000;
+}
+
+p1 {
+    color: #FFFFFF;
+}
+
+.bar {
+    background-color: #FFFFFF;
+    padding: 10px 0;
+    color: white;
+    text-align: center;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.horizontal-list{
+    list-style-type: none;
+    padding: 0;
+}
+
+.horizontal-list li {
+    display: inline-block; /*make list horizontal */
+    margin-right: 10px;
+    color: #000000;
+}
+
+.horizontal-list li:before {
+    content: "\25A0"; /*unicode for square*/
+    margin-right: 5px;
+}
+
+.case-studies-list {
+    text-align:center;
+}
+footer { 
+    font-size: 0.70em;
+    text-align: center;
+    font-style: italic;
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #63666A;
+}
+#team {
+    text-align: center;
+}
+
+.team-members {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.member {
+    width: 150px; /* Adjust the width as needed */
+}
+
+.member img {
+    width: 100%;
+    border: 3px solid #333; /* Color of the border */
+    border-radius: 10px; /* Rounded corners of the image */
+    margin-bottom: 10px;
+}
+
+.member p {
+    margin: 0;
+}

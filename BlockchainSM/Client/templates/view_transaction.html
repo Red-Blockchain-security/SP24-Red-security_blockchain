@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>View Transactions</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css">
+    <style>
+        .navbar {
+            background-color: #e7e7e7 !important;
+            color: black !important;
+        }
+        .navbar-brand, .nav-link {
+            color: black !important;
+            font-weight: bold;
+        }
+        .nav-link:hover {
+        color: #1c1cff !important; /* Change color on hover */
+        }
+        .btn {
+            background-color: #1c1cff !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAV BAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class=container>
+            <a href="#" class="navbar-brand">User Client</a>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Wallet Generator</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/make/transaction" class="nav-link">Make Transaction</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/view/transaction" class="nav-link">View Transaction</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <br>
+    <br>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-body">
+                    <h4 class="card-title">View Transactions</h4>
+                    <p class="card-text">Enter a node URL and click View Transactions button to check for transactions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- SECTION FOR ADDING NODE -->
+    <div class="container alert alert-secondary">
+        <div class="row">
+            <label class="col-sm-2">Node URL:</label>
+            <div class="col-sm-10">
+                <textarea id="node_url" rows="1" class="form-control">http://127.0.0.1:5001</textarea>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <input type="button" id="view_transactions" class="btn btn-lg" value="View Transactions">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- jQuery JS -->
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+    <!-- Ellipsis.js JS -->
+    <!--  <script src="https://cdn.jsdelivr.net/npm/jquery-ellipsis@0.1.6/dist/jquery.ellipsis.min.js"></script> -->
+
+
+    <!--JAVASCRIPT TO HANDLE BUTTON CLICK EVENT-->
+    <script>
+    // When click on View Transaction button, display the mined transaction table.
+        $(function() {
+            // Invoke Get The Blockchain Method from blockchain.py
+            $('#view_transactions').click(function() {
+                $.ajax({
+                    url: document.getElementById("node_url") + '/chain',
+                    type: 'GET',
+                    success: function(response) {
+                        //Generate Transactions Table
+                        var transactions = []
+                        count = 1;
+
+                        for (i = 0; i<response['length']; i++){
+                            for (j = 0; j<response['chain'][i]['transactions'].length; j++){
+                                transaction = [count,
+                                            response['chain'][i]['transactions'][j]['sender_public_key'],
+                                            response['chain'][i]['transactions'][j]['recipient_public_key'],
+                                            response['chain'][i]['transactions'][j]['amount'],
+                                            response['chain'][i]['timestamp'],
+                                            response['chain'][i]['block_number']];
+                                transactions.push(transaction);
+                                count += 1;
+                            };
+                        };
+
+                        //POPULATE THE MINED TRANSACTIONS TABLE
+                        $('#transaction_table').dataTable({
+                            data: transactions,
+                            columns: [
+                                {title: "#"},
+                                {title: "Sender Public Key"},
+                                {title: "Recipient Public Key"},
+                                {title: "Amount"},
+                                {title: "Timestamp"},
+                                {title: "Block#"},
+                            ]
+                        });
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
+

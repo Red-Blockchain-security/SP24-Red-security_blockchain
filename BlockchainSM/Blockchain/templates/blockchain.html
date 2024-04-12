@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blockchain</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css">
+
+    <style>
+        .navbar {
+            background-color: #e7e7e7 !important;
+            color: black !important;
+        }
+        .navbar-brand, .nav-link {
+            color: black !important;
+            font-weight: bold;
+        }
+        .nav-link:hover {
+        color: #1c1cff !important; /* Change color on hover */
+        }
+        .btn {
+            background-color: #1c1cff !important;
+            color: white !important;
+        }
+        .refresh-button {
+            background-color: #1c1cff !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAV BAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class=container>
+            <a href="#" class="navbar-brand">Miner Client</a>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/configure" class="nav-link">Configure</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <br>
+    <br>
+    <br>
+    <!-- SECTION FOR UNMINED TRANSACTION TABLE -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="card-body">
+                    <h4 class="card-title">Transactions to be added to the next block</h4>
+                    <button type="submit" id="refresh_transactions" class="btn">
+                        &#x21BB; Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- LIST THE TABLE -->
+    <div class="container">
+        <table id="unmined_transaction_table" class="table table-bordered" cellspacing="0" width="100%">
+        </table>
+
+        <!-- MINE BUTTON -->
+        <div class="col-lg-12 text-center">
+            <input type="button" id="mine_button" class="btn" value="Mine">
+        </div>
+    </div>
+
+    <!-- SECTION FOR THE MINED / BLOCKCHAIN TRANSACTION TABLE -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="card-body">
+                    <h4 class="card-title">Transactions on the blockchain</h4>
+                    <button type="submit" id="refresh_blockchain" class="btn">
+                        &#x21BB; Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- LIST THE TABLE -->
+    <div class="container">
+        <table id="transaction_table" class="table table-bordered" cellspacing="0" width="100%">
+        </table>
+    </div>
+
+    <!-- jQuery JS -->
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+    <!-- Ellipsis.js JS -->
+    <!--  <script src="https://cdn.jsdelivr.net/npm/jquery-ellipsis@0.1.6/dist/jquery.ellipsis.min.js"></script> -->
+
+
+    <!--JAVASCRIPT TO GET THE DATA TO THE TABLE-->
+    <script>
+        $(function() {
+            // STEP 3
+            // Invoke Get the blockchain method in blockchain.py
+            $.ajax({
+                url: '/chain',
+                type: 'GET',
+                success: function(response) {
+                    let transactions = []
+                    let count = 1
+
+                    // First loop - iterate block by block
+                    // Second loop - iterate each transaction available in that block
+                    for (i = 0; i<response['length']; i++){
+                        for (j = 0; j<response['chain'][i]['transactions'].length; j++){
+                            let transaction = [
+                                count,
+                                response['chain'][i]['transactions'][j]['sender_public_key'],
+                                response['chain'][i]['transactions'][j]['recipient_public_key'],
+                                response['chain'][i]['transactions'][j]['amount'],
+                                response['chain'][i]['timestamp'],
+                                response['chain'][i]['block_number'],
+                            ]
+                            transactions.push(transaction);
+                            count += 1
+                        }
+                    }
+
+
+                    //POPULATE THE MINED TRANSACTIONS TABLE
+                    $('#transaction_table').dataTable({
+                        data: transactions,
+                        columns: [
+                            {title: "#"},
+                            {title: "Sender Public Key"},
+                            {title: "Recipient Public Key"},
+                            {title: "Amount"},
+                            {title: "Timestamp"},
+                            {title: "Block#"},
+                        ]
+                    });
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+
+            // STEP 1
+            // INVOKING GET TRANSACTION RESOURCE
+            $.ajax({
+                url: '/transactions/get',
+                type: 'GET',
+                success: function(response) {
+                    let transactions = []
+                    var count = 1
+                    for (i = 0; i<response['transactions'].length; i++){
+                        let transaction = [
+                            count,
+                            response['transactions'][i]['sender_public_key'],
+                            response['transactions'][i]['recipient_public_key'],
+                            response['transactions'][i]['amount'],
+                        ]
+                        transactions.push(transaction);
+                        count += 1
+                    }
+
+                    // POPULATE THE NOT YET MINED TRANSACTIONS TABLE
+                    $('#unmined_transaction_table').dataTable({
+                        data: transactions,
+                        columns: [
+                            {title: "#"},
+                            {title: "Sender Public Key"},
+                            {title: "Recipient Public Key"},
+                            {title: "Amount"},
+                        ]
+                    });
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+
+            // STEP 2
+            // MINE BUTTON EVENT
+            $('#mine_button').click(function() {
+                $.ajax({
+                    url: '/mine',
+                    type: 'GET',
+                    success: function(response) {
+                        window.location.reload();
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            // REFRESH BUTTON EVENT
+            $('#refresh_transactions').click(function() {
+                window.location.reload();
+            });
+
+            $('#refresh_transactions').click(function() {
+                $.ajax({
+                    url: '/nodes/resolve',
+                    type: 'GET',
+                    success: function(response) {
+                        window.location.reload();
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
